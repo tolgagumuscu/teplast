@@ -1,0 +1,18 @@
+{
+  "name": "teplast-server",
+  "version": "6.0.0",
+  "description": "Teplast Sipariş Yönetimi — Render Deploy",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "mailparser": "^3.7.1",
+    "redis": "^4.6.13",
+    "xlsx": "^0.18.5"
+  }
+}

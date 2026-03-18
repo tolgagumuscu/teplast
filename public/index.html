@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>Teplast – Sipariş Yönetimi</title>
+  <link rel="icon" type="image/png" href="https://static.wixstatic.com/media/d79e5e_0be0c78d13cf4b4d9768b79fbca32a5a~mv2.png"/>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css"/>
+</head>
+<body>
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="brand-mark brand-mark--logo">
+        <img src="https://static.wixstatic.com/media/d79e5e_0be0c78d13cf4b4d9768b79fbca32a5a~mv2.png" alt="T.E. PLAST" onerror="this.parentElement.classList.remove('brand-mark--logo');this.parentElement.textContent='T'"/>
+      </div>
+      <div>
+        <span class="brand-name">T.E. PLAST</span>
+        <span class="brand-tagline">Sipariş Yönetimi</span>
+      </div>
+    </div>
+    <nav class="nav">
+      <a class="nav-link active" data-view="dashboard" href="#">
+        <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>
+        Genel Bakış
+      </a>
+      <a class="nav-link" data-view="orders" href="#">
+        <svg viewBox="0 0 24 24"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+        Siparişler
+        <span class="nav-badge" id="navBadgeOrders" style="display:none"></span>
+      </a>
+      <a class="nav-link" data-view="companies" href="#">
+        <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+        Firmalar
+        <span class="nav-badge" id="navBadgeCompanies" style="display:none"></span>
+      </a>
+      <a class="nav-link" data-view="stats" href="#">
+        <svg viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+        İstatistik
+      </a>
+      <a class="nav-link" data-view="settings" href="#">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
+        Ayarlar
+      </a>
+    </nav>
+    <div class="sidebar-bottom">
+      <button class="scan-btn" id="syncBtn" onclick="startSync()">
+        <svg id="syncIcon" viewBox="0 0 24 24"><path d="M23 4v6h-6"/><path d="M1 20v-6h6"/><path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/></svg>
+        Mail Tara
+      </button>
+      <div id="lastScanInfo" style="font-size:.6rem;color:rgba(255,255,255,.28);text-align:center;margin-bottom:5px;line-height:1.4"></div>
+      <div id="autoScanLabel" style="font-size:.6rem;color:rgba(255,255,255,.22);text-align:center;margin-bottom:5px">Otomatik tarama kapalı</div>
+      <div id="syncDot" style="display:flex;align-items:center;gap:6px;font-size:11px;color:#aaa;margin-bottom:6px;">
+        <span id="syncDotCircle" style="width:8px;height:8px;border-radius:50%;background:#aaa;display:inline-block;"></span>
+        <span id="syncDotLabel">Bağlanıyor…</span>
+      </div>
+      <div class="scan-meta">
+        <span id="lastSync">Henüz taranmadı</span>
+        <div class="pbar-wrap" id="pbarWrap" style="display:none"><div class="pbar" id="pbar"></div></div>
+        <span class="scan-status" id="scanStatus"></span>
+        <div class="scan-counter" id="scanCounter" style="display:none"></div>
+      </div>
+    </div>
+    <div class="scan-log-panel" id="scanLogPanel" style="display:none">
+      <div class="scan-log-head">
+        <span>Tarama Logu</span>
+        <button onclick="document.getElementById('scanLogPanel').style.display='none'">✕</button>
+      </div>
+      <div class="scan-log-body" id="scanLogBody"></div>
+    </div>
+  </aside>
+
+  <!-- MOBİL ALT NAV -->
+  <nav class="mobile-bottom-nav" id="mobileBottomNav">
+    <a class="mbn-link active" data-view="dashboard" href="#" onclick="switchView('dashboard');setMobileActive(this)">
+      <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>
+      <span>Genel</span>
+    </a>
+    <a class="mbn-link" data-view="orders" href="#" onclick="switchView('orders');setMobileActive(this)">
+      <svg viewBox="0 0 24 24"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+      <span>Siparişler</span>
+      <span class="mbn-badge" id="mbnBadgeOrders" style="display:none"></span>
+    </a>
+    <a class="mbn-link mbn-scan" href="#" onclick="startSync()">
+      <svg viewBox="0 0 24 24"><path d="M23 4v6h-6"/><path d="M1 20v-6h6"/><path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/></svg>
+      <span>Tara</span>
+    </a>
+    <a class="mbn-link" data-view="companies" href="#" onclick="switchView('companies');setMobileActive(this)">
+      <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+      <span>Firmalar</span>
+    </a>
+    <a class="mbn-link" data-view="settings" href="#" onclick="switchView('settings');setMobileActive(this)">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
+      <span>Ayarlar</span>
+    </a>
+  </nav>
+
+  <main class="main">
+    <header class="topbar">
+      <h1 class="page-title" id="pageTitle">Genel Bakış</h1>
+      <div class="topbar-controls">
+        <div class="filter-pills">
+          <button class="pill active" data-filter="all">Tümü</button>
+          <button class="pill" data-filter="week">Bu Hafta</button>
+          <button class="pill" data-filter="month">Bu Ay</button>
+        </div>
+        <div class="date-range">
+          <input type="date" id="dateFrom" class="date-inp"/>
+          <span style="color:var(--ink-faint);font-size:.8rem">—</span>
+          <input type="date" id="dateTo" class="date-inp"/>
+        </div>
+        <select class="status-dd" id="statusFilter">
+          <option value="all">Tüm Durumlar</option>
+          <option value="new">Yeni</option>
+          <option value="processing">İşlemde</option>
+          <option value="shipped">Sevk Edildi</option>
+          <option value="done">Tamamlandı</option>
+          <option value="cancelled">İptal</option>
+        </select>
+      </div>
+    </header>
+
+    <!-- DASHBOARD -->
+    <section class="view active" id="view-dashboard">
+      <div class="kpi-row">
+        <div class="kpi" data-accent="navy">
+          <div class="kpi-icon"><svg viewBox="0 0 24 24"><path d="M20 7H4a2 2 0 00-2 2v6a2 2 0 002 2h16a2 2 0 002-2V9a2 2 0 00-2-2z"/><path d="M16 21V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v16"/></svg></div>
+          <div class="kpi-body"><span class="kpi-val" id="statTotal">0</span><span class="kpi-label">Toplam Sipariş</span></div>
+        </div>
+        <div class="kpi" data-accent="blue">
+          <div class="kpi-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
+          <div class="kpi-body"><span class="kpi-val" id="statNew">0</span><span class="kpi-label">Bekleyen</span></div>
+        </div>
+        <div class="kpi" data-accent="green">
+          <div class="kpi-icon"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
+          <div class="kpi-body"><span class="kpi-val" id="statDone">0</span><span class="kpi-label">Tamamlanan</span></div>
+        </div>
+        <div class="kpi kpi--overdue" data-accent="red" id="kpiOverdue" style="display:none">
+          <div class="kpi-icon"><svg viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></div>
+          <div class="kpi-body"><span class="kpi-val" id="statOverdue">0</span><span class="kpi-label">Geciken</span></div>
+        </div>
+        <div class="kpi" data-accent="amber">
+          <div class="kpi-icon"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></div>
+          <div class="kpi-body"><span class="kpi-val" id="statWeek">0</span><span class="kpi-label">Bu Hafta</span></div>
+        </div>
+      </div>
+      <div class="section-head">
+        <span class="section-label">Son Siparişler</span>
+        <button class="section-action" onclick="exportCSV()">↓ CSV İndir</button>
+      </div>
+      <div id="recentOrders"></div>
+    </section>
+
+    <!-- ORDERS -->
+    <section class="view" id="view-orders">
+      <div class="toolbar">
+        <div class="search-wrap">
+          <svg class="search-ico" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+          <input type="text" id="searchInput" class="search-inp" placeholder="Firma, ürün veya yetkili ara…" oninput="renderOrders()"/>
+        </div>
+        <button class="btn-secondary" onclick="exportCSV()">↓ CSV</button>
+        <button class="btn-primary" onclick="openAddModal()">+ Sipariş Ekle</button>
+      </div>
+      <div id="bulkToolbar" class="bulk-toolbar" style="display:none">
+        <span id="bulkCount" class="bulk-count">0 seçili</span>
+        <select id="bulkStatus" class="status-dd" style="font-size:.74rem;padding:5px 8px">
+          <option value="">Durum Değiştir…</option>
+          <option value="processing">İşlemde</option>
+          <option value="shipped">Sevk Edildi</option>
+          <option value="done">Tamamlandı</option>
+          <option value="cancelled">İptal</option>
+        </select>
+        <button class="btn-primary" style="font-size:.74rem;padding:5px 14px" onclick="applyBulkStatus()">Uygula</button>
+        <button class="btn-secondary" style="font-size:.74rem;padding:5px 12px;color:var(--red);border-color:var(--red)" onclick="bulkDelete()">Sil</button>
+        <button class="btn-secondary" style="font-size:.74rem;padding:5px 10px" onclick="clearBulkSelection()">✕ Temizle</button>
+      </div>
+      <div id="ordersTable"></div>
+    </section>
+
+    <!-- COMPANIES -->
+    <section class="view" id="view-companies">
+      <div class="toolbar">
+        <div class="search-wrap">
+          <svg class="search-ico" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+          <input type="text" id="companySearch" class="search-inp" placeholder="Firma ara…" oninput="renderCompanies()"/>
+        </div>
+      </div>
+      <div id="companiesGrid"></div>
+    </section>
+
+    <!-- İSTATİSTİK -->
+    <section class="view" id="view-stats">
+      <div id="statsContent">
+        <div class="empty"><p>Yükleniyor…</p></div>
+      </div>
+    </section>
+
+    <!-- SETTINGS -->
+    <section class="view" id="view-settings">
+      <div class="settings-wrap">
+        <div class="settings-card">
+          <div class="settings-card-head">
+            <svg viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+            Mail Sunucu
+          </div>
+          <div class="field-row"><label>POP3 Sunucu</label><input type="text" id="cfgHost" value="mail.teplast.com.tr"/></div>
+          <div class="field-row"><label>Port</label><input type="number" id="cfgPort" value="110" style="max-width:90px"/></div>
+          <div class="field-row"><label>Kullanıcı Adı</label><input type="text" id="cfgUser" value="info@teplast.com.tr"/></div>
+          <div class="field-row"><label>Şifre</label><input type="password" id="cfgPass" placeholder="Mail şifreniz"/></div>
+          <div class="field-row"><label>TLS / SSL</label>
+            <select id="cfgTLS" style="max-width:150px">
+              <option value="none" selected>Yok (port 110)</option>
+              <option value="tls">TLS (port 995)</option>
+              <option value="starttls">STARTTLS</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="settings-card">
+          <div class="settings-card-head">
+            <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
+            Yapay Zeka
+          </div>
+          <div class="field-row"><label>Gemini API Key</label><input type="password" id="cfgGemini" placeholder="AIzaSy…"/></div>
+          <div class="settings-note">Model sırası: <strong>gemini-2.0-flash → 2.0-flash-lite → 1.5-flash</strong>. Biri kota dolarsa otomatik sıradakine geçer. Ücretsiz plan: 20 RPD/model.<br><span id="activeModelNote" style="color:var(--green);font-weight:600"></span></div>
+        </div>
+
+        <div class="settings-card settings-card--highlight">
+          <div class="settings-card-head">
+            <svg viewBox="0 0 24 24"><line x1="4" y1="21" x2="4" y2="14"/><line x1="4" y1="10" x2="4" y2="3"/><line x1="12" y1="21" x2="12" y2="12"/><line x1="12" y1="8" x2="12" y2="3"/><line x1="20" y1="21" x2="20" y2="16"/><line x1="20" y1="12" x2="20" y2="3"/><line x1="1" y1="14" x2="7" y2="14"/><line x1="9" y1="8" x2="15" y2="8"/><line x1="17" y1="16" x2="23" y2="16"/></svg>
+            Tarama Limiti
+          </div>
+          <div class="field-row">
+            <label>Analiz edilecek mail</label>
+            <input type="number" id="cfgMailLimit" min="10" max="1000" value="250" style="max-width:90px"/>
+          </div>
+          <div class="settings-note">Normal kullanım: <strong>100–250</strong>. Geçmiş tara: 500+. Maks: 1000.<br>Seçili: <strong id="cfgMailLimitDisplay">250 mail</strong></div>
+        </div>
+
+
+        <div class="settings-card">
+          <div class="settings-card-head">
+            <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            Otomatik Tarama &amp; Bildirim
+          </div>
+          <div class="field-row">
+            <label>Tarama Aralığı</label>
+            <select id="cfgAutoScan" style="max-width:180px">
+              <option value="0">Kapalı (manuel)</option>
+              <option value="5">Her 5 dakika</option>
+              <option value="10">Her 10 dakika</option>
+              <option value="15">Her 15 dakika</option>
+              <option value="30">Her 30 dakika</option>
+              <option value="60">Her saat</option>
+            </select>
+          </div>
+          <div class="field-row">
+            <label>Bildirim</label>
+            <div style="display:flex;align-items:center;gap:10px;flex:1">
+              <label style="display:flex;align-items:center;gap:6px;width:auto;cursor:pointer">
+                <input type="checkbox" id="cfgNotifications" style="width:16px;height:16px;cursor:pointer"/>
+                <span style="font-size:.78rem;color:var(--ink-2);font-weight:500">Yeni sipariş gelince bildir</span>
+              </label>
+              <button class="btn-proxy-test" id="notifPermBtn" onclick="requestNotificationPermission()">İzin Ver</button>
+            </div>
+          </div>
+          <div class="settings-note">Uygulama açık olduğu sürece arka planda çalışır. Bildirim için tarayıcı izni gereklidir.</div>
+        </div>
+
+        <div class="settings-card">
+          <div class="settings-card-head">
+            <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 010 20M12 2a15.3 15.3 0 000 20"/></svg>
+            Proxy / Ağ
+          </div>
+          <div class="field-row">
+            <label>Proxy URL</label>
+            <input type="text" id="cfgProxyUrl" value="http://localhost:3131" placeholder="http://192.168.1.X:3131"/>
+          </div>
+          <div class="proxy-test-row">
+            <button class="btn-proxy-test" id="proxyTestBtn" onclick="testProxy()">Bağlantıyı Test Et</button>
+            <span id="proxyTestResult" class="proxy-test-result"></span>
+          </div>
+          <div class="settings-note lan-note">
+            <strong>Başlatmak için:</strong> <code>cd proxy &amp;&amp; npm start</code><br>
+            <strong>Kontrol:</strong> <code>http://localhost:3131/ping</code> → <code>{"ok":true}</code> görünmeli
+          </div>
+        </div>
+
+        <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap">
+          <button class="btn-save" onclick="saveSettings()">Kaydet</button>
+          <span class="safety-note">🔒 Hiçbir mail silinmez — yalnızca okuma yapılır (RETR).</span>
+        </div>
+
+        <div class="settings-card">
+          <div class="settings-card-head">
+            <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/></svg>
+            Engellenen Gönderenler
+          </div>
+          <div id="blockedList"></div>
+          <div style="display:flex;gap:8px;margin-top:10px;align-items:center">
+            <input type="text" id="newBlockedEmail" class="search-inp" placeholder="engellenecek@email.com" style="flex:1"/>
+            <button class="btn-save" onclick="addBlocked()">Ekle</button>
+          </div>
+        </div>
+
+        <div class="settings-card settings-card--danger">
+          <div class="settings-card-head">
+            <svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4h6v2"/></svg>
+            Veri Yönetimi
+          </div>
+          <div class="settings-note" style="margin-bottom:14px">Kaydedilen siparişleri ve taranan mail geçmişini temizler. <strong>Mail sunucusundaki orijinal mailler silinmez.</strong></div>
+          <button class="btn-danger" onclick="clearDashboard()">Tüm Verileri Temizle</button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- SCAN OVERLAY — sürüklenebilir -->
+  <div class="scan-overlay" id="scanOverlay">
+    <div class="scan-overlay-head" id="scanOverlayDragHandle">
+      <div style="display:flex;align-items:center;gap:8px;flex:1">
+        <div class="scan-overlay-spinner" id="scanOverlaySpinner"></div>
+        <span class="scan-overlay-title">Mail Taranıyor…</span>
+      </div>
+      <button class="scan-overlay-close" onclick="hideScanOverlay()" title="Küçült">—</button>
+    </div>
+    <div class="scan-overlay-body" id="scanOverlayBody">
+      <div class="scan-overlay-stats">
+        <div class="scan-stat">
+          <span class="scan-stat-val" id="scanStatTotal">—</span>
+          <span class="scan-stat-lbl">Toplam Mail</span>
+        </div>
+        <div class="scan-stat">
+          <span class="scan-stat-val" id="scanStatNew">—</span>
+          <span class="scan-stat-lbl">Yeni Mail</span>
+        </div>
+        <div class="scan-stat">
+          <span class="scan-stat-val" id="scanStatThreads">—</span>
+          <span class="scan-stat-lbl">Thread</span>
+        </div>
+        <div class="scan-stat">
+          <span class="scan-stat-val" id="scanStatFound" style="color:var(--green)">0</span>
+          <span class="scan-stat-lbl">Sipariş</span>
+        </div>
+      </div>
+      <div class="scan-overlay-bar-wrap"><div class="scan-overlay-bar" id="scanOverlayBar"></div></div>
+      <div class="scan-overlay-label" id="scanOverlayLabel">Başlatılıyor…</div>
+      <div class="scan-overlay-counter">
+        <span id="scanOverlayStep">0 / 0 thread</span>
+        <span id="scanOverlayPct">0%</span>
+      </div>
+      <div class="scan-overlay-found" id="scanOverlayFound"></div>
+    </div>
+  </div>
+
+  <!-- MODAL -->
+  <div class="overlay" id="modalOverlay" onclick="closeModal(event)">
+    <div class="modal">
+      <button class="modal-x" onclick="closeModalDirect()">✕</button>
+      <h2 class="modal-title" id="modalTitle"></h2>
+      <div id="modalBody"></div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+  <script src="js/storage.js"></script>
+  <script src="js/gemini.js"></script>
+  <script src="js/pop3.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
+

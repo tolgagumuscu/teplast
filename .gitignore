@@ -1,0 +1,11 @@
+node_modules/
+*.db
+*.db-journal
+data.json
+data.json.migrated
+.env
+*.log
+.DS_Store
+
+# Ürün veritabanı — elle ekle, repo'ya girmesin
+public/data/products.json
